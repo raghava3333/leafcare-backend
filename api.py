@@ -3,12 +3,24 @@ from PIL import Image
 import torchvision.transforms as transforms
 import io
 import torch
+import timm
+import torch.serialization
 import os
 import gdown
 
 app = FastAPI()
 
 MODEL_PATH = "full_model_eff.pth"
+
+# ✅ allow EfficientNet class
+torch.serialization.add_safe_globals(
+    [timm.models.efficientnet.EfficientNet]
+)
+
+# ✅ load model safely
+model = torch.load(MODEL_PATH, map_location='cpu', weights_only=False)
+
+model.eval()
 
 # ✅ CORRECT DOWNLOAD (NO HTML ISSUE)
 if not os.path.exists(MODEL_PATH):
