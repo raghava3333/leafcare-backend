@@ -6,6 +6,7 @@ import torch
 import timm
 import os
 import gdown
+torch.serialization.add_safe_globals([timm.models.efficientnet.EfficientNet])
 
 app = FastAPI()
 
