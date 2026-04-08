@@ -3,6 +3,7 @@ from PIL import Image
 import torchvision.transforms as transforms
 import io
 import torch
+import timm
 import os
 import gdown
 
