@@ -30,14 +30,8 @@ def download_model():
 if not os.path.exists(MODEL_PATH):
     download_model()
 
-# 🔥 Create model architecture
-model = timm.create_model('efficientnet_b0', pretrained=False)
-model.classifier = torch.nn.Linear(model.classifier.in_features, 6)
-
 # 🔥 Load weights (SAFE WAY)
-state_dict = torch.load(MODEL_PATH, map_location='cpu')
-model.load_state_dict(state_dict)
-
+model = torch.load(MODEL_PATH, map_location='cpu', weights_only=False)
 model.eval()
 
 # Classes
