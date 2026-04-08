@@ -17,7 +17,7 @@ if not os.path.exists(MODEL_PATH):
     gdown.download(url, MODEL_PATH, quiet=False)
 
 # 🔥 Load model
-model = torch.load(MODEL_PATH, map_location='cpu')
+model = torch.load(MODEL_PATH, map_location='cpu',weight_only=False)
 model.eval()
 
 # Classes
