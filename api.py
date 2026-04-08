@@ -3,31 +3,28 @@ from PIL import Image
 import torchvision.transforms as transforms
 import io
 import torch
-import torch.nn as nn
 import os
 import gdown
-import timm
 
 app = FastAPI()
 
-MODEL_PATH = "weights.pth"
+MODEL_PATH = "full_model_eff.pth"
 
-# ✅ CORRECT DOWNLOAD
+# ✅ CORRECT DOWNLOAD (NO HTML ISSUE)
 if not os.path.exists(MODEL_PATH):
     print("Downloading model...")
+    
     url = "https://drive.google.com/uc?id=1_5eZPAan9XfL9NCroBqZJF2vty8Pve7s"
+    
     gdown.download(url, MODEL_PATH, quiet=False, fuzzy=True)
 
-# ✅ MODEL ARCHITECTURE
-model = timm.create_model('efficientnet_b0', pretrained=False)
-model.classifier = nn.Linear(model.classifier.in_features, 6)
-
-# ✅ LOAD WEIGHTS
-state_dict = torch.load(MODEL_PATH, map_location='cpu')
-model.load_state_dict(state_dict)
-
+# ✅ LOAD FULL MODEL DIRECTLY
+print("Loading model...")
+model = torch.load(MODEL_PATH, map_location='cpu')
 model.eval()
+print("Model loaded successfully")
 
+# ✅ CLASSES
 class_names = [
     'Anthracnose fruit',
     'Anthracnose leaf',
@@ -37,15 +34,18 @@ class_names = [
     'Healthy leaf'
 ]
 
+# ✅ TRANSFORM
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor()
 ])
 
+# ✅ ROOT
 @app.get("/")
 def root():
     return {"status": "API running"}
 
+# ✅ PREDICT
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     image_bytes = await file.read()
