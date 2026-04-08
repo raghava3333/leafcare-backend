@@ -1,12 +1,14 @@
 from fastapi import FastAPI, File, UploadFile
 from PIL import Image
-import torch
 import torchvision.transforms as transforms
 import io
+import torch
+import os
+import gdown
 
 app = FastAPI()
 
-# Load model
+# 🔥 Model download
 MODEL_PATH = "full_model_eff.pth"
 
 if not os.path.exists(MODEL_PATH):
@@ -18,6 +20,7 @@ if not os.path.exists(MODEL_PATH):
 model = torch.load(MODEL_PATH, map_location='cpu')
 model.eval()
 
+# Classes
 class_names = [
     'Anthracnose fruit',
     'Anthracnose leaf',
@@ -27,6 +30,7 @@ class_names = [
     'Healthy leaf'
 ]
 
+# Transform
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor()
