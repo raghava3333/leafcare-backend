@@ -10,6 +10,14 @@ import torch.serialization
 
 app = FastAPI()
 
+# Create model architecture
+model = timm.create_model("efficientnet_b0", pretrained=False, num_classes=6)
+
+# Load weights
+state_dict = torch.load(MODEL_PATH, map_location='cpu')
+model.load_state_dict(state_dict)
+
+model.eval()
 # -----------------------------
 # CONFIG
 # -----------------------------
