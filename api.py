@@ -7,7 +7,15 @@ import io
 app = FastAPI()
 
 # Load model
-model = torch.load("full_model_eff.pth", map_location='cpu')
+MODEL_PATH = "full_model_eff.pth"
+
+if not os.path.exists(MODEL_PATH):
+    print("Downloading model...")
+    url = "https://drive.google.com/uc?id=1_5eZPAan9XfL9NCroBqZJF2vty8Pve7s"
+    gdown.download(url, MODEL_PATH, quiet=False)
+
+# 🔥 Load model
+model = torch.load(MODEL_PATH, map_location='cpu')
 model.eval()
 
 class_names = [
