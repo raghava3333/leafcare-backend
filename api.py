@@ -22,7 +22,7 @@ MODEL_PATH = "full_model_eff.pth"
 
 # 🔁 Replace this URL with YOUR own GitHub Releases direct download link
 # (see instructions below on how to create it)
-MODEL_URL = "https://github.com/YOUR_USERNAME/YOUR_REPO/releases/download/v1.0/full_model_eff.pth"
+MODEL_URL = "https://drive.google.com/file/d/1_5eZPAan9XfL9NCroBqZJF2vty8Pve7s/view?usp=drivesdk"
 
 def download_model():
     """Download the model from GitHub Releases if not present."""
