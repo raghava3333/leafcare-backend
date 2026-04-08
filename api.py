@@ -5,26 +5,45 @@ import io
 import torch
 import timm
 import os
-import gdown
+import requests
 
-# Add safe globals (still good practice)
+# 🔥 Reduce memory usage (critical for Render free tier)
+torch.set_num_threads(1)
+
+# Optional safe globals (harmless)
 torch.serialization.add_safe_globals([timm.models.efficientnet.EfficientNet])
 
 app = FastAPI()
 
-# 🔥 Model download
+# -------------------------------------------------------------------
+# MODEL SETUP
+# -------------------------------------------------------------------
 MODEL_PATH = "full_model_eff.pth"
 
-if not os.path.exists(MODEL_PATH):
-    print("Downloading model...")
-    url = "https://drive.google.com/uc?id=1_5eZPAan9XfL9NCroBqZJF2vty8Pve7s"
-    gdown.download(url, MODEL_PATH, quiet=False)
+# 🔁 Replace this URL with YOUR own GitHub Releases direct download link
+# (see instructions below on how to create it)
+MODEL_URL = "https://github.com/YOUR_USERNAME/YOUR_REPO/releases/download/v1.0/full_model_eff.pth"
 
-# 🔥 Load model with weights_only=False
+def download_model():
+    """Download the model from GitHub Releases if not present."""
+    print(f"Downloading model from {MODEL_URL} ...")
+    response = requests.get(MODEL_URL, stream=True)
+    response.raise_for_status()
+    with open(MODEL_PATH, "wb") as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            f.write(chunk)
+    print("Download complete.")
+
+if not os.path.exists(MODEL_PATH):
+    download_model()
+
+# 🔥 Load the full model (weights_only=False because it's a full object)
 model = torch.load(MODEL_PATH, map_location='cpu', weights_only=False)
 model.eval()
 
-# Classes
+# -------------------------------------------------------------------
+# CLASS NAMES & TRANSFORM
+# -------------------------------------------------------------------
 class_names = [
     'Anthracnose fruit',
     'Anthracnose leaf',
@@ -34,17 +53,22 @@ class_names = [
     'Healthy leaf'
 ]
 
-# Transform
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor()
 ])
 
+# -------------------------------------------------------------------
+# ENDPOINTS
+# -------------------------------------------------------------------
+@app.get("/")
+def root():
+    return {"status": "Mango Disease API is running"}
+
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     image_bytes = await file.read()
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-
     img_tensor = transform(image).unsqueeze(0)
 
     with torch.no_grad():
