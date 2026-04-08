@@ -3,35 +3,28 @@ from PIL import Image
 import torchvision.transforms as transforms
 import io
 import torch
-import torch.nn as nn
+import timm
 import os
 import gdown
-import timm
+
+# Add safe globals (still good practice)
+torch.serialization.add_safe_globals([timm.models.efficientnet.EfficientNet])
 
 app = FastAPI()
 
-# 🔥 Model path
-MODEL_PATH = "weights.pth"
+# 🔥 Model download
+MODEL_PATH = "full_model_eff.pth"
 
-# 🔥 Download model
 if not os.path.exists(MODEL_PATH):
     print("Downloading model...")
-    url = "https://drive.google.com/uc?id=YOUR_NEW_FILE_ID"
+    url = "https://drive.google.com/uc?id=1_5eZPAan9XfL9NCroBqZJF2vty8Pve7s"
     gdown.download(url, MODEL_PATH, quiet=False)
 
-# 🔥 Create model architecture
-model = timm.create_model('efficientnet_b0', pretrained=False)
-
-# 🔥 Modify final layer (IMPORTANT: 6 classes)
-model.classifier = nn.Linear(model.classifier.in_features, 6)
-
-# 🔥 Load weights
-state_dict = torch.load(MODEL_PATH, map_location='cpu')
-model.load_state_dict(state_dict)
-
+# 🔥 Load model with weights_only=False
+model = torch.load(MODEL_PATH, map_location='cpu', weights_only=False)
 model.eval()
 
-# 🔥 Classes
+# Classes
 class_names = [
     'Anthracnose fruit',
     'Anthracnose leaf',
@@ -41,13 +34,12 @@ class_names = [
     'Healthy leaf'
 ]
 
-# 🔥 Transform
+# Transform
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor()
 ])
 
-# 🔥 API
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     image_bytes = await file.read()
