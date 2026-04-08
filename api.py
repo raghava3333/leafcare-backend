@@ -3,43 +3,15 @@ from PIL import Image
 import torchvision.transforms as transforms
 import io
 import torch
-import timm
-import torch.serialization
-import os
-import gdown
 
 app = FastAPI()
 
+# Load model directly (NOW from repo)
 MODEL_PATH = "full_model_eff.pth"
 
-# ✅ allow EfficientNet class
-torch.serialization.add_safe_globals(
-    [timm.models.efficientnet.EfficientNet]
-)
-
-# ✅ load model safely
 model = torch.load(MODEL_PATH, map_location='cpu', weights_only=False)
-
 model.eval()
 
-# ✅ CORRECT DOWNLOAD (NO HTML ISSUE)
-if not os.path.exists(MODEL_PATH):
-    print("Downloading model...")
-    
-    url = "https://drive.google.com/uc?id=1_5eZPAan9XfL9NCroBqZJF2vty8Pve7s"
-    
-    gdown.download(url, MODEL_PATH, quiet=False, fuzzy=True)
-    
-    if not os.path.exists(MODEL_PATH):
-        raise Exception("Model download failed!")
-
-# ✅ LOAD FULL MODEL DIRECTLY
-print("Loading model...")
-model = torch.load(MODEL_PATH, map_location='cpu')
-model.eval()
-print("Model loaded successfully")
-
-# ✅ CLASSES
 class_names = [
     'Anthracnose fruit',
     'Anthracnose leaf',
@@ -49,18 +21,15 @@ class_names = [
     'Healthy leaf'
 ]
 
-# ✅ TRANSFORM
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor()
 ])
 
-# ✅ ROOT
 @app.get("/")
 def root():
-    return {"status": "API running"}
+    return {"status": "API is running"}
 
-# ✅ PREDICT
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     image_bytes = await file.read()
