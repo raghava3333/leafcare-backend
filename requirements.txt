@@ -3,6 +3,6 @@ uvicorn
 torch
 torchvision
 pillow
-gdown
+requests
 python-multipart
 timm
