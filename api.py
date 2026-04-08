@@ -19,7 +19,7 @@ app = FastAPI()
 MODEL_PATH = "full_model_eff.pth"
 
 # 🔁 REPLACE THIS URL WITH YOUR ACTUAL GITHUB RELEASES DIRECT LINK
-MODEL_URL = "https://github.com/YOUR_USERNAME/YOUR_REPO/releases/download/v1.0/full_model_eff.pth"
+MODEL_URL = "https://drive.google.com/file/d/1_5eZPAan9XfL9NCroBqZJF2vty8Pve7s/view?usp=drivesdk"
 
 # -------------------------------------------------------------------
 # HELPER: Check if file is a valid PyTorch model
