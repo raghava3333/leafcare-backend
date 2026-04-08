@@ -29,6 +29,9 @@ if not os.path.exists(MODEL_PATH):
     url = "https://drive.google.com/uc?id=1_5eZPAan9XfL9NCroBqZJF2vty8Pve7s"
     
     gdown.download(url, MODEL_PATH, quiet=False, fuzzy=True)
+    
+    if not os.path.exists(MODEL_PATH):
+        raise Exception("Model download failed!")
 
 # ✅ LOAD FULL MODEL DIRECTLY
 print("Loading model...")
