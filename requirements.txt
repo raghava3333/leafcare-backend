@@ -1,8 +1,7 @@
 fastapi
 uvicorn
-pillow
 torch
-timm
 torchvision
+pillow
+gdown
 python-multipart
-requests
