@@ -5,4 +5,3 @@ torchvision
 pillow
 requests
 python-multipart
-timm
